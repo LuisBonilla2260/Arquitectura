@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Cuenta - Sistema de Gestión Académica</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">🎓 CorhuilaBD</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/">Inicio</a></li>
+                    <li><a href="/login.html">Iniciar Sesión</a></li>
+                    <li><a href="/register.html">Registrarse</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="form-container fade-in" id="verify-container">
+            <h1 class="form-title">✅ Verificar Cuenta</h1>
+            
+            <div style="background: #e3f2fd; padding: 1.5rem; border-radius: 15px; margin-bottom: 2rem; border-left: 4px solid #2196f3;">
+                <h4 style="color: #1976d2; margin-bottom: 0.5rem;">📧 Código de Verificación Enviado</h4>
+                <p style="color: #1565c0; font-size: 0.9rem; margin: 0;">
+                    Hemos enviado un código de verificación de 6 dígitos a tu email. 
+                    Ingresa el código para activar tu cuenta.
+                </p>
+            </div>
+            
+            <!-- Información del proceso -->
+            <div style="background: #fff3e0; padding: 1rem; border-radius: 10px; margin-bottom: 2rem; border-left: 4px solid #ff9800;">
+                <h4 style="color: #f57c00; margin-bottom: 0.5rem;">🔄 Paso 2 de 3: Verificación</h4>
+                <p style="color: #ef6c00; font-size: 0.9rem; margin: 0;">
+                    <strong>Paso 1:</strong> ✅ Registro completado<br>
+                    <strong>Paso 2:</strong> 🔄 Verificación de cuenta (actual)<br>
+                    <strong>Paso 3:</strong> 🚀 Acceso al sistema
+                </p>
+            </div>
+            
+            <form id="verifyForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">Email de la Cuenta *</label>
+                    <input type="email" id="email" name="email" class="form-input" required 
+                           placeholder="Ingresa el email con el que te registraste">
+                </div>
+                
+                <div class="form-group">
+                    <label for="verificationCode" class="form-label">Código de Verificación *</label>
+                    <input type="text" id="verificationCode" name="verificationCode" class="form-input" required 
+                           placeholder="Ingresa el código de 6 dígitos" maxlength="6" pattern="[0-9]{6}">
+                    <small style="color: #666; font-size: 0.8rem;">
+                        El código debe tener exactamente 6 dígitos numéricos
+                    </small>
+                </div>
+                
+                <button type="submit" class="btn btn-success" style="width: 100%;">
+                    ✅ Verificar Cuenta
+                </button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <p style="color: #666; margin-bottom: 1rem;">
+                    ¿No recibiste el código?
+                </p>
+                <button class="btn btn-primary" onclick="resendCode()">
+                    📧 Reenviar Código
+                </button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="/login.html" class="btn btn-warning">🔙 Volver al Login</a>
+            </div>
+            
+            <div style="background: #fff3e0; padding: 1rem; border-radius: 10px; margin-top: 2rem; border-left: 4px solid #ff9800;">
+                <h4 style="color: #f57c00; margin-bottom: 0.5rem;">⏰ Código Expirado</h4>
+                <p style="color: #ef6c00; font-size: 0.9rem; margin: 0;">
+                    El código de verificación expira en 15 minutos. Si expira, usa el botón "Reenviar Código".
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        // Validación en tiempo real del código
+        document.getElementById('verificationCode').addEventListener('input', function() {
+            const code = this.value;
+            if (code.length === 6 && /^\d{6}$/.test(code)) {
+                this.style.borderColor = '#4caf50';
+                this.style.boxShadow = '0 0 0 3px rgba(76, 175, 80, 0.1)';
+            } else {
+                this.style.borderColor = '#e1e5e9';
+                this.style.boxShadow = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

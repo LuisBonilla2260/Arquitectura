@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Académica - CorhuilaBD</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">🎓 CorhuilaBD</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/dashboard.html">Dashboard</a></li>
+                    <li><a href="/estudiantes.html">Estudiantes</a></li>
+                    <li><a href="/programas.html">Programas</a></li>
+                    <li><a href="/login.html" class="guest-only">Iniciar Sesión</a></li>
+                    <li><a href="/register.html" class="guest-only">Registrarse</a></li>
+                    <li><a href="#" data-action="logout" class="auth-only" style="display: none;">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard fade-in">
+            <h1 class="dashboard-title">Bienvenido al Sistema de Gestión Académica</h1>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">🎓</div>
+                    <div class="stat-label">Gestión Académica</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">👥</div>
+                    <div class="stat-label">Gestión de Estudiantes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">📚</div>
+                    <div class="stat-label">Gestión de Programas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">🔐</div>
+                    <div class="stat-label">Sistema Seguro</div>
+                </div>
+            </div>
+
+            <div class="dashboard">
+                <h2 style="color: #667eea; text-align: center; margin-bottom: 2rem;">
+                    Funcionalidades Principales
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    <div style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <h3 style="color: #667eea; margin-bottom: 1rem;">👥 Gestión de Estudiantes</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">✅ Crear nuevos estudiantes</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">✅ Editar información personal</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">✅ Gestionar estados académicos</li>
+                            <li style="padding: 0.5rem 0;">✅ Asignar programas de estudio</li>
+                        </ul>
+                        <a href="/estudiantes.html" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Gestionar Estudiantes</a>
+                    </div>
+
+                    <div style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <h3 style="color: #667eea; margin-bottom: 1rem;">📚 Gestión de Programas</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">✅ Crear programas académicos</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">✅ Configurar facultades</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">✅ Definir semestres y créditos</li>
+                            <li style="padding: 0.5rem 0;">✅ Gestionar descripciones</li>
+                        </ul>
+                        <a href="/programas.html" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Gestionar Programas</a>
+                    </div>
+
+                    <div style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <h3 style="color: #667eea; margin-bottom: 1rem;">🔐 Sistema de Seguridad</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">✅ Autenticación segura</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">✅ Verificación por email</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">✅ Control de acceso</li>
+                            <li style="padding: 0.5rem 0;">✅ Auditoría completa</li>
+                        </ul>
+                        <a href="/login.html" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">🔐 Iniciar Sesión</a>
+                        <a href="/register.html" class="btn btn-success" style="margin-top: 0.5rem; display: inline-block;">📝 Crear Cuenta</a>
+                        <a href="/verify.html" class="btn btn-warning" style="margin-top: 0.5rem; display: inline-block;">🔍 Verificar Cuenta</a>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 3rem;">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">🚀 Comenzar</h3>
+                    <p style="color: #666; margin-bottom: 2rem;">
+                        Selecciona una de las opciones anteriores para comenzar a gestionar tu sistema académico
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="/dashboard.html" class="btn btn-success">Ver Dashboard</a>
+                        <a href="/estudiantes.html" class="btn btn-primary">Gestionar Estudiantes</a>
+                        <a href="/programas.html" class="btn btn-warning">Gestionar Programas</a>
+                    </div>
+                </div>
+                
+                <!-- Información del flujo de acceso -->
+                <div style="background: white; padding: 2rem; border-radius: 15px; margin-top: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    <h3 style="color: #667eea; margin-bottom: 1.5rem; text-align: center;">📋 Flujo de Acceso al Sistema</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                        <div style="text-align: center; padding: 1rem; background: #e8f5e8; border-radius: 10px; border-left: 4px solid #4caf50;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📝</div>
+                            <h4 style="color: #388e3c; margin-bottom: 0.5rem;">Paso 1: Registro</h4>
+                            <p style="color: #2e7d32; font-size: 0.9rem; margin: 0;">
+                                Crea tu cuenta con usuario, email y contraseña
+                            </p>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #e3f2fd; border-radius: 10px; border-left: 4px solid #2196f3;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📧</div>
+                            <h4 style="color: #1976d2; margin-bottom: 0.5rem;">Paso 2: Verificación</h4>
+                            <p style="color: #1565c0; font-size: 0.9rem; margin: 0;">
+                                Verifica tu cuenta con el código enviado por email
+                            </p>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #fff3e0; border-radius: 10px; border-left: 4px solid #ff9800;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔐</div>
+                            <h4 style="color: #f57c00; margin-bottom: 0.5rem;">Paso 3: Acceso</h4>
+                            <p style="color: #ef6c00; font-size: 0.9rem; margin: 0;">
+                                Inicia sesión y accede al sistema completo
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>

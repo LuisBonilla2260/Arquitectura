@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug de Autenticación</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .debug-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+        .success { background-color: #d4edda; }
+        .error { background-color: #f8d7da; }
+        .info { background-color: #d1ecf1; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🐛 Debug de Autenticación</h1>
+    
+    <div class="debug-section">
+        <h3>1. Estado de Cookies</h3>
+        <button onclick="checkCookies()">Verificar Cookies</button>
+        <div id="cookies-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>2. Prueba de Login</h3>
+        <form id="login-form">
+            <input type="text" id="username" placeholder="Usuario" required><br><br>
+            <input type="password" id="password" placeholder="Contraseña" required><br><br>
+            <button type="submit">Login</button>
+        </form>
+        <div id="login-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>3. Prueba de API</h3>
+        <button onclick="testAPI()">Probar API</button>
+        <div id="api-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>4. Estado de Sesión</h3>
+        <button onclick="checkSession()">Verificar Sesión</button>
+        <div id="session-result"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:9000';
+        
+        // Verificar cookies
+        function checkCookies() {
+            const resultDiv = document.getElementById('cookies-result');
+            const cookies = document.cookie;
+            
+            if (cookies) {
+                resultDiv.innerHTML = `<div class="success">✅ Cookies encontradas: ${cookies}</div>`;
+            } else {
+                resultDiv.innerHTML = `<div class="error">❌ No hay cookies</div>`;
+            }
+        }
+        
+        // Login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const resultDiv = document.getElementById('login-result');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            resultDiv.innerHTML = 'Iniciando sesión...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `<div class="success">✅ Login exitoso: ${JSON.stringify(data)}</div>`;
+                    
+                    // Verificar cookies después del login
+                    setTimeout(checkCookies, 1000);
+                } else {
+                    const error = await response.text();
+                    resultDiv.innerHTML = `<div class="error">❌ Error: ${response.status} - ${error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        });
+        
+        // Probar API
+        async function testAPI() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.innerHTML = 'Probando API...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/programas/status/true`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `<div class="success">✅ API accesible. Datos: ${data.length} programas</div>`;
+                } else {
+                    const error = await response.text();
+                    resultDiv.innerHTML = `<div class="error">❌ API no accesible: ${response.status} - ${error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Verificar sesión
+        async function checkSession() {
+            const resultDiv = document.getElementById('session-result');
+            resultDiv.innerHTML = 'Verificando sesión...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/estudiantes/status/true`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = '<div class="success">✅ Sesión activa - Usuario autenticado</div>';
+                } else if (response.status === 401) {
+                    resultDiv.innerHTML = '<div class="error">❌ Sesión inactiva - Usuario no autenticado</div>';
+                } else {
+                    resultDiv.innerHTML = `<div class="info">ℹ️ Estado desconocido: ${response.status}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Verificar cookies al cargar
+        window.addEventListener('load', checkCookies);
+    </script>
+</body>
+</html>

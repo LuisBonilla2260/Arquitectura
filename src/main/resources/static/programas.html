@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Programas - Sistema de Gestión Académica</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">🎓 CorhuilaBD</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/dashboard.html">Dashboard</a></li>
+                    <li><a href="/estudiantes.html">Estudiantes</a></li>
+                    <li><a href="/programas.html" style="background: #667eea; color: white;">Programas</a></li>
+                    <li><a href="#" data-action="logout">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="table-container fade-in">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                <h1 class="table-title">📚 Gestión de Programas Académicos</h1>
+                <button class="btn btn-success" onclick="window.app.openNewModal('programa')">
+                    ➕ Nuevo Programa
+                </button>
+            </div>
+
+            <!-- Filtros -->
+            <div style="background: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">🔍 Filtros de Búsqueda</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div>
+                        <label for="filterFacultad" class="form-label">Facultad:</label>
+                        <select id="filterFacultad" class="form-input" onchange="filterProgramas()">
+                            <option value="">Todas las facultades</option>
+                            <option value="Ingeniería">Ingeniería</option>
+                            <option value="Ciencias">Ciencias</option>
+                            <option value="Administración">Administración</option>
+                            <option value="Humanidades">Humanidades</option>
+                            <option value="Salud">Salud</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filterSemestres" class="form-label">Semestres:</label>
+                        <select id="filterSemestres" class="form-input" onchange="filterProgramas()">
+                            <option value="">Todos los semestres</option>
+                            <option value="6">6 Semestres</option>
+                            <option value="8">8 Semestres</option>
+                            <option value="10">10 Semestres</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="searchPrograma" class="form-label">Buscar:</label>
+                        <input type="text" id="searchPrograma" class="form-input" placeholder="Nombre del programa..." onkeyup="filterProgramas()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información sobre eliminación lógica -->
+            <div style="background: #e8f5e8; padding: 1rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #4caf50;">
+                <h4 style="color: #388e3c; margin-bottom: 0.5rem;">ℹ️ Información del Sistema</h4>
+                <p style="color: #2e7d32; font-size: 0.9rem; margin: 0;">
+                    <strong>Eliminación Lógica:</strong> Solo se muestran los programas activos. Los programas eliminados no aparecen en esta lista.
+                </p>
+            </div>
+            
+            <!-- Tabla de Programas -->
+            <div class="table-container" style="overflow-x: auto;">
+                <table id="programas-table" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre del Programa</th>
+                            <th>Facultad</th>
+                            <th>Semestres</th>
+                            <th>Créditos</th>
+                            <th>Descripción</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los datos se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Estadísticas -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem;">
+                <div style="background: #e3f2fd; padding: 1rem; border-radius: 10px; text-align: center; border-left: 4px solid #2196f3;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #1976d2;" id="total-programas-filter">0</div>
+                    <div style="color: #1565c0;">Total Programas</div>
+                </div>
+                <div style="background: #e8f5e8; padding: 1rem; border-radius: 10px; text-align: center; border-left: 4px solid #4caf50;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #388e3c;" id="programas-ingenieria-filter">0</div>
+                    <div style="color: #2e7d32;">Programas de Ingeniería</div>
+                </div>
+                <div style="background: #fff3e0; padding: 1rem; border-radius: 10px; text-align: center; border-left: 4px solid #ff9800;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #f57c00;" id="programas-ciencias-filter">0</div>
+                    <div style="color: #ef6c00;">Programas de Ciencias</div>
+                </div>
+                <div style="background: #fce4ec; padding: 1rem; border-radius: 10px; text-align: center; border-left: 4px solid #e91e63;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #c2185b;" id="programas-admin-filter">0</div>
+                    <div style="color: #ad1457;">Programas de Administración</div>
+                </div>
+            </div>
+
+            <!-- Información Adicional -->
+            <div style="background: white; padding: 2rem; border-radius: 15px; margin-top: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                <h3 style="color: #667eea; margin-bottom: 1.5rem; text-align: center;">📊 Información de Programas</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    <div>
+                        <h4 style="color: #667eea; margin-bottom: 1rem;">🏗️ Estructura de Créditos</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">
+                                <strong>6 Semestres:</strong> 120-140 créditos
+                            </li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">
+                                <strong>8 Semestres:</strong> 160-180 créditos
+                            </li>
+                            <li style="padding: 0.5rem 0;">
+                                <strong>10 Semestres:</strong> 200-220 créditos
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: #667eea; margin-bottom: 1rem;">🎯 Facultades Disponibles</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">🏭 Ingeniería</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">🔬 Ciencias</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">💼 Administración</li>
+                            <li style="padding: 0.5rem 0;">📚 Humanidades</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Crear/Editar Programa -->
+    <div id="programaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="programaModalTitle">➕ Nuevo Programa Académico</h2>
+                <span class="close" onclick="hideModal('programaModal')">&times;</span>
+            </div>
+            
+            <form data-form="programa" id="programaForm">
+                <input type="hidden" id="programaId" name="id">
+                
+                <div class="form-group">
+                    <label for="nombrePrograma" class="form-label">Nombre del Programa *</label>
+                    <input type="text" id="nombrePrograma" name="nombre" class="form-input" required 
+                           placeholder="Ingresa el nombre del programa académico">
+                </div>
+                
+                <div class="form-group">
+                    <label for="facultadPrograma" class="form-label">Facultad *</label>
+                    <select id="facultadPrograma" name="facultad" class="form-input" required>
+                        <option value="">Selecciona la facultad</option>
+                        <option value="Ingeniería">Ingeniería</option>
+                        <option value="Ciencias">Ciencias</option>
+                        <option value="Administración">Administración</option>
+                        <option value="Humanidades">Humanidades</option>
+                        <option value="Salud">Salud</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="semestresPrograma" class="form-label">Número de Semestres *</label>
+                    <select id="semestresPrograma" name="semestres" class="form-input" required>
+                        <option value="">Selecciona el número de semestres</option>
+                        <option value="6">6 Semestres</option>
+                        <option value="8">8 Semestres</option>
+                        <option value="10">10 Semestres</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="creditosPrograma" class="form-label">Número de Créditos *</label>
+                    <input type="number" id="creditosPrograma" name="creditos" class="form-input" required 
+                           min="100" max="250" placeholder="Ingresa el número total de créditos">
+                </div>
+                
+                <div class="form-group">
+                    <label for="descripcionPrograma" class="form-label">Descripción del Programa *</label>
+                    <textarea id="descripcionPrograma" name="descripcion" class="form-input" required 
+                              rows="4" placeholder="Describe el programa académico, sus objetivos y características principales"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-success" style="flex: 1;">💾 Guardar Programa</button>
+                    <button type="button" class="btn btn-warning" onclick="hideModal('programaModal')" style="flex: 1;">❌ Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        // Filtrar programas
+        function filterProgramas() {
+            const facultadFilter = document.getElementById('filterFacultad').value;
+            const semestresFilter = document.getElementById('filterSemestres').value;
+            const searchFilter = document.getElementById('searchPrograma').value.toLowerCase();
+            
+            const rows = document.querySelectorAll('#programas-table tbody tr');
+            let totalVisible = 0;
+            let ingenieria = 0;
+            let ciencias = 0;
+            let admin = 0;
+            
+            rows.forEach(row => {
+                const facultad = row.cells[1].textContent.trim();
+                const semestres = row.cells[2].textContent.trim();
+                const nombre = row.cells[0].textContent.toLowerCase();
+                
+                let show = true;
+                
+                if (facultadFilter && facultad !== facultadFilter) show = false;
+                if (semestresFilter && semestres !== semestresFilter) show = false;
+                if (searchFilter && !nombre.includes(searchFilter)) show = false;
+                
+                row.style.display = show ? '' : 'none';
+                
+                if (show) {
+                    totalVisible++;
+                    if (facultad === 'Ingeniería') ingenieria++;
+                    else if (facultad === 'Ciencias') ciencias++;
+                    else if (facultad === 'Administración') admin++;
+                }
+            });
+            
+            // Actualizar estadísticas del filtro
+            document.getElementById('total-programas-filter').textContent = totalVisible;
+            document.getElementById('programas-ingenieria-filter').textContent = ingenieria;
+            document.getElementById('programas-ciencias-filter').textContent = ciencias;
+            document.getElementById('programas-admin-filter').textContent = admin;
+        }
+
+        // Función para abrir modal de edición
+        function openEditPrograma(id) {
+            // Implementar lógica para cargar datos del programa
+            console.log('Editando programa con ID:', id);
+        }
+
+        // Actualizar créditos automáticamente según semestres
+        document.getElementById('semestresPrograma').addEventListener('change', function() {
+            const semestres = parseInt(this.value);
+            const creditosInput = document.getElementById('creditosPrograma');
+            
+            if (semestres === 6) {
+                creditosInput.value = '120';
+                creditosInput.placeholder = '120 créditos (recomendado)';
+            } else if (semestres === 8) {
+                creditosInput.value = '160';
+                creditosInput.placeholder = '160 créditos (recomendado)';
+            } else if (semestres === 10) {
+                creditosInput.value = '200';
+                creditosInput.placeholder = '200 créditos (recomendado)';
+            }
+        });
+    </script>
+</body>
+</html>

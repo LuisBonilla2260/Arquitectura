@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Estudiantes - Sistema de Gestión Académica</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">🎓 CorhuilaBD</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/dashboard.html">Dashboard</a></li>
+                    <li><a href="/estudiantes.html" style="background: #667eea; color: white;">Estudiantes</a></li>
+                    <li><a href="/programas.html">Programas</a></li>
+                    <li><a href="#" data-action="logout">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="table-container fade-in">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                <h1 class="table-title">👥 Gestión de Estudiantes</h1>
+                <button class="btn btn-success" onclick="window.app.openNewModal('estudiante')">
+                    ➕ Nuevo Estudiante
+                </button>
+            </div>
+
+            <!-- Filtros -->
+            <div style="background: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">🔍 Filtros de Búsqueda</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div>
+                        <label for="filterStatus" class="form-label">Estado:</label>
+                        <select id="filterStatus" class="form-input" onchange="filterEstudiantes()">
+                            <option value="">Todos los estados</option>
+                            <option value="A">Activo</option>
+                            <option value="I">Inactivo</option>
+                            <option value="E">Egresado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filterPrograma" class="form-label">Programa:</label>
+                        <select id="filterPrograma" class="form-input" onchange="filterEstudiantes()">
+                            <option value="">Todos los programas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="searchEstudiante" class="form-label">Buscar:</label>
+                        <input type="text" id="searchEstudiante" class="form-input" placeholder="Nombre o documento..." onkeyup="filterEstudiantes()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información sobre eliminación lógica -->
+            <div style="background: #e8f5e8; padding: 1rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #4caf50;">
+                <h4 style="color: #388e3c; margin-bottom: 0.5rem;">ℹ️ Información del Sistema</h4>
+                <p style="color: #2e7d32; font-size: 0.9rem; margin: 0;">
+                    <strong>Eliminación Lógica:</strong> Solo se muestran los estudiantes activos. Los estudiantes eliminados no aparecen en esta lista.
+                </p>
+            </div>
+            
+            <!-- Tabla de Estudiantes -->
+            <div class="table-container" style="overflow-x: auto;">
+                <table id="estudiantes-table" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Edad</th>
+                            <th>Documento</th>
+                            <th>Estado</th>
+                            <th>Programa</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los datos se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Estadísticas -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem;">
+                <div style="background: #e3f2fd; padding: 1rem; border-radius: 10px; text-align: center; border-left: 4px solid #2196f3;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #1976d2;" id="total-estudiantes-filter">0</div>
+                    <div style="color: #1565c0;">Total Estudiantes</div>
+                </div>
+                <div style="background: #e8f5e8; padding: 1rem; border-radius: 10px; text-align: center; border-left: 4px solid #4caf50;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #388e3c;" id="estudiantes-activos-filter">0</div>
+                    <div style="color: #2e7d32;">Estudiantes Activos</div>
+                </div>
+                <div style="background: #fff3e0; padding: 1rem; border-radius: 10px; text-align: center; border-left: 4px solid #ff9800;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #f57c00;" id="estudiantes-inactivos-filter">0</div>
+                    <div style="color: #ef6c00;">Estudiantes Inactivos</div>
+                </div>
+                <div style="background: #fce4ec; padding: 1rem; border-radius: 10px; text-align: center; border-left: 4px solid #e91e63;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #c2185b;" id="estudiantes-egresados-filter">0</div>
+                    <div style="color: #ad1457;">Estudiantes Egresados</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Crear/Editar Estudiante -->
+    <div id="estudianteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="estudianteModalTitle">➕ Nuevo Estudiante</h2>
+                <span class="close" onclick="hideModal('estudianteModal')">&times;</span>
+            </div>
+            
+            <form data-form="estudiante" id="estudianteForm">
+                <input type="hidden" id="estudianteId" name="id">
+                
+                <div class="form-group">
+                    <label for="nombreEstudiante" class="form-label">Nombre Completo *</label>
+                    <input type="text" id="nombreEstudiante" name="nombre" class="form-input" required 
+                           placeholder="Ingresa el nombre completo del estudiante">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edadEstudiante" class="form-label">Edad *</label>
+                    <input type="number" id="edadEstudiante" name="edad" class="form-input" required 
+                           min="15" max="100" placeholder="Ingresa la edad">
+                </div>
+                
+                <div class="form-group">
+                    <label for="documentoEstudiante" class="form-label">Número de Documento *</label>
+                    <input type="number" id="documentoEstudiante" name="documento" class="form-input" required 
+                           placeholder="Ingresa el número de documento">
+                </div>
+                
+                <div class="form-group">
+                    <label for="statusEstudiante" class="form-label">Estado Académico *</label>
+                    <select id="statusEstudiante" name="status" class="form-input" required>
+                        <option value="">Selecciona el estado</option>
+                        <option value="A">Activo</option>
+                        <option value="I">Inactivo</option>
+                        <option value="E">Egresado</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="programaEstudiante" class="form-label">Programa Académico *</label>
+                    <select id="programaEstudiante" name="programaId" class="form-input" required>
+                        <option value="">Selecciona el programa</option>
+                        <!-- Los programas se cargarán dinámicamente -->
+                    </select>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-success" style="flex: 1;">💾 Guardar Estudiante</button>
+                    <button type="button" class="btn btn-warning" onclick="hideModal('estudianteModal')" style="flex: 1;">❌ Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        // Filtrar estudiantes
+        function filterEstudiantes() {
+            const statusFilter = document.getElementById('filterStatus').value;
+            const programaFilter = document.getElementById('filterPrograma').value;
+            const searchFilter = document.getElementById('searchEstudiante').value.toLowerCase();
+            
+            const rows = document.querySelectorAll('#estudiantes-table tbody tr');
+            let totalVisible = 0;
+            let activos = 0;
+            let inactivos = 0;
+            let egresados = 0;
+            
+            rows.forEach(row => {
+                const status = row.cells[3].textContent.trim();
+                const programa = row.cells[4].textContent.trim();
+                const nombre = row.cells[0].textContent.toLowerCase();
+                const documento = row.cells[2].textContent;
+                
+                let show = true;
+                
+                if (statusFilter && status !== statusFilter) show = false;
+                if (programaFilter && programa !== programaFilter) show = false;
+                if (searchFilter && !nombre.includes(searchFilter) && !documento.includes(searchFilter)) show = false;
+                
+                row.style.display = show ? '' : 'none';
+                
+                if (show) {
+                    totalVisible++;
+                    if (status === 'A') activos++;
+                    else if (status === 'I') inactivos++;
+                    else if (status === 'E') egresados++;
+                }
+            });
+            
+            // Actualizar estadísticas del filtro
+            document.getElementById('total-estudiantes-filter').textContent = totalVisible;
+            document.getElementById('estudiantes-activos-filter').textContent = activos;
+            document.getElementById('estudiantes-inactivos-filter').textContent = inactivos;
+            document.getElementById('estudiantes-egresados-filter').textContent = egresados;
+        }
+
+        // Cargar programas cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔄 Página de estudiantes cargada, inicializando desde app.js...');
+            
+            // Esperar a que app.js esté disponible
+            if (window.app) {
+                console.log('✅ app.js disponible, cargando programas...');
+                window.app.loadProgramasForEstudianteForm();
+            } else {
+                console.log('⏳ Esperando a que app.js esté disponible...');
+                // Reintentar después de un breve delay
+                setTimeout(() => {
+                    if (window.app) {
+                        console.log('✅ app.js disponible después del delay, cargando programas...');
+                        window.app.loadProgramasForEstudianteForm();
+                    } else {
+                        console.error('❌ app.js no disponible después del delay');
+                    }
+                }, 100);
+            }
+        });
+
+        // Función para abrir modal de edición
+        async function openEditEstudiante(id) {
+            try {
+                console.log('🔄 Editando estudiante con ID:', id);
+                
+                // Usar la función de app.js para abrir el modal de edición
+                if (window.app && window.app.openEditEstudianteModal) {
+                    await window.app.openEditEstudianteModal(id);
+                } else {
+                    console.error('❌ Función de edición no disponible en app.js');
+                    alert('Error: Función de edición no disponible');
+                }
+            } catch (error) {
+                console.error('❌ Error al abrir modal de edición:', error);
+                alert('Error al cargar datos del estudiante para editar');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Autenticación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-danger { background-color: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Prueba de Autenticación</h1>
+    
+    <div class="test-section">
+        <h3>1. Estado de Autenticación</h3>
+        <button onclick="checkAuthStatus()" class="btn-primary">Verificar Estado</button>
+        <div id="auth-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. Prueba de API Protegida</h3>
+        <button onclick="testProtectedAPI()" class="btn-success">Probar API</button>
+        <div id="api-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Prueba de Sesión</h3>
+        <button onclick="testSession()" class="btn-primary">Probar Sesión</button>
+        <div id="session-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>4. Logout</h3>
+        <button onclick="logout()" class="btn-danger">Cerrar Sesión</button>
+        <div id="logout-result"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:9000';
+        
+        async function checkAuthStatus() {
+            const statusDiv = document.getElementById('auth-status');
+            statusDiv.innerHTML = 'Verificando...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/estudiantes/status/true`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = '<div class="success">✅ Usuario autenticado correctamente</div>';
+                } else if (response.status === 401) {
+                    statusDiv.innerHTML = '<div class="error">❌ Usuario no autenticado (401)</div>';
+                } else {
+                    statusDiv.innerHTML = `<div class="error">❌ Error: ${response.status} ${response.statusText}</div>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Error de conexión: ${error.message}</div>`;
+            }
+        }
+        
+        async function testProtectedAPI() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.innerHTML = 'Probando...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/programas/status/true`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `<div class="success">✅ API accesible. Datos recibidos: ${data.length} programas</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ API no accesible: ${response.status} ${response.statusText}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testSession() {
+            const resultDiv = document.getElementById('session-result');
+            resultDiv.innerHTML = 'Probando sesión...';
+            
+            try {
+                // Hacer dos llamadas consecutivas para ver si la sesión se mantiene
+                const response1 = await fetch(`${API_BASE_URL}/api/estudiantes/status/true`, {
+                    credentials: 'include'
+                });
+                
+                const response2 = await fetch(`${API_BASE_URL}/api/programas/status/true`, {
+                    credentials: 'include'
+                });
+                
+                if (response1.ok && response2.ok) {
+                    resultDiv.innerHTML = '<div class="success">✅ Sesión mantenida entre llamadas</div>';
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ Problema con la sesión</div>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function logout() {
+            const resultDiv = document.getElementById('logout-result');
+            resultDiv.innerHTML = 'Cerrando sesión...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = '<div class="success">✅ Sesión cerrada correctamente</div>';
+                    // Limpiar resultados anteriores
+                    document.getElementById('auth-status').innerHTML = '';
+                    document.getElementById('api-result').innerHTML = '';
+                    document.getElementById('session-result').innerHTML = '';
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Error al cerrar sesión: ${response.status}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Verificar estado al cargar la página
+        window.addEventListener('load', checkAuthStatus);
+    </script>
+</body>
+</html>

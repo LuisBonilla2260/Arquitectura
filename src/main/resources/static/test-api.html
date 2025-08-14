@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API - Programas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .result {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test API - Programas</h1>
+    
+    <div class="test-section">
+        <h2>1. Test API Base</h2>
+        <button onclick="testApiBase()">Probar API Base</button>
+        <div id="api-base-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Test Endpoint Programas</h2>
+        <button onclick="testProgramasEndpoint()">Probar /api/programas</button>
+        <div id="programas-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Test Endpoint Programas Activos</h2>
+        <button onclick="testProgramasActivos()">Probar /api/programas/status/true</button>
+        <div id="programas-activos-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Test Autenticación</h2>
+        <button onclick="testAuth()">Probar Autenticación</button>
+        <div id="auth-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. Test Completo con Credenciales</h2>
+        <button onclick="testWithCredentials()">Probar con Credenciales</button>
+        <div id="credentials-result" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:9000';
+        
+        function logResult(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${isError ? 'error' : 'success'}`;
+        }
+        
+        async function testApiBase() {
+            try {
+                logResult('api-base-result', '🔄 Probando conexión a la API...');
+                
+                const response = await fetch(`${API_BASE}/api/programas`);
+                const status = response.status;
+                const statusText = response.statusText;
+                
+                logResult('api-base-result', `📡 Status: ${status} ${statusText}\nURL: ${API_BASE}/api/programas`);
+                
+            } catch (error) {
+                logResult('api-base-result', `❌ Error: ${error.message}`, true);
+            }
+        }
+        
+        async function testProgramasEndpoint() {
+            try {
+                logResult('programas-result', '🔄 Probando endpoint /api/programas...');
+                
+                const response = await fetch(`${API_BASE}/api/programas`);
+                const status = response.status;
+                const statusText = response.statusText;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    logResult('programas-result', `✅ Éxito!\nStatus: ${status} ${statusText}\nDatos: ${JSON.stringify(data, null, 2)}`);
+                } else {
+                    logResult('programas-result', `⚠️ Status: ${status} ${statusText}`, true);
+                }
+                
+            } catch (error) {
+                logResult('programas-result', `❌ Error: ${error.message}`, true);
+            }
+        }
+        
+        async function testProgramasActivos() {
+            try {
+                logResult('programas-activos-result', '🔄 Probando endpoint /api/programas/status/true...');
+                
+                const response = await fetch(`${API_BASE}/api/programas/status/true`);
+                const status = response.status;
+                const statusText = response.statusText;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    logResult('programas-activos-result', `✅ Éxito!\nStatus: ${status} ${statusText}\nProgramas activos: ${data.length}\nDatos: ${JSON.stringify(data, null, 2)}`);
+                } else {
+                    logResult('programas-activos-result', `⚠️ Status: ${status} ${statusText}`, true);
+                }
+                
+            } catch (error) {
+                logResult('programas-activos-result', `❌ Error: ${error.message}`, true);
+            }
+        }
+        
+        async function testAuth() {
+            try {
+                logResult('auth-result', '🔄 Probando estado de autenticación...');
+                
+                const response = await fetch(`${API_BASE}/api/estudiantes/status/true`);
+                const status = response.status;
+                const statusText = response.statusText;
+                
+                if (response.ok) {
+                    logResult('auth-result', `✅ Autenticado!\nStatus: ${status} ${statusText}`);
+                } else if (response.status === 401) {
+                    logResult('auth-result', `🔒 No autenticado\nStatus: ${status} ${statusText}`);
+                } else {
+                    logResult('auth-result', `⚠️ Status inesperado: ${status} ${statusText}`, true);
+                }
+                
+            } catch (error) {
+                logResult('auth-result', `❌ Error: ${error.message}`, true);
+            }
+        }
+        
+        async function testWithCredentials() {
+            try {
+                logResult('credentials-result', '🔄 Probando con credenciales...');
+                
+                const response = await fetch(`${API_BASE}/api/programas/status/true`, {
+                    credentials: 'include'
+                });
+                const status = response.status;
+                const statusText = response.statusText;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    logResult('credentials-result', `✅ Éxito con credenciales!\nStatus: ${status} ${statusText}\nProgramas: ${data.length}\nDatos: ${JSON.stringify(data, null, 2)}`);
+                } else {
+                    logResult('credentials-result', `⚠️ Status: ${status} ${statusText}`, true);
+                }
+                
+            } catch (error) {
+                logResult('credentials-result', `❌ Error: ${error.message}`, true);
+            }
+        }
+        
+        // Auto-ejecutar test básico al cargar la página
+        window.addEventListener('load', () => {
+            testApiBase();
+        });
+    </script>
+</body>
+</html>
